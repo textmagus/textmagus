@@ -9,11 +9,12 @@ branches:
 addons:
   apt:
     packages:
-      - libgtk-3-dev
       - libgtk2.0-dev
+      - libgtk-3-dev
       - libncurses5-dev
       - libqt4-dev
 
+# install a recent cmake version
 install:
   - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
   - mkdir -p "${DEPS_DIR}" && cd "${DEPS_DIR}"
@@ -40,8 +41,10 @@ env:
   matrix:
     - B=cmake/debug   C="-DENABLE_SHARED=0"
     - B=cmake/debug   C="-DENABLE_SHARED=1"
+    - B=cmake/debug   C="-DENABLE_SHARED=0 -DENABLE_WERROR=1"
     - B=cmake/release C="-DENABLE_SHARED=0"
     - B=cmake/release C="-DENABLE_SHARED=1"
+    - B=cmake/release C="-DENABLE_SHARED=1 -DENABLE_WERROR=1"
 
 before_script:
   - export BUILD_DIR="$TRAVIS_BUILD_DIR/build"
