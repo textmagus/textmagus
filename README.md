@@ -21,19 +21,20 @@ gcc versions >= 4.6 and clang versions >= 3.3 are known to work.
 
 A recent cmake version >= 3.4.
 
-curses, GTK2 or GTK3 development packages.
+Curses, GTK2, GTK3 or QT4 development packages.
 
 On Fedora 23:
 ```
-dnf install cmake gcc-c++ libstdc++-devel make
+dnf install cmake gcc-c++ git libstdc++-devel make
 dnf install ncurses-devel               # for the curses version
 dnf install gtk2-devel                  # for the gtk2 version
 dnf install gtk3-devel                  # for the gtk3 version
+dnf install qt-devel                    # for the qt4 version
 ```
 
 On Ubuntu 14.04 "Trusty":
 ```
-apt-get install cmake libgtk2.0-dev libgtk-3-dev libncurses5-dev make
+apt-get install cmake git libgtk2.0-dev libgtk-3-dev libncurses5-dev libqt4-dev make
 ```
 
 

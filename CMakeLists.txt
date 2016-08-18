@@ -59,7 +59,7 @@ set(CMAKE_CXX_STANDARD 11)  # C++11
 option(ENABLE_CURSES "Build textmagus curses version." ON)
 option(ENABLE_GTK2   "Build textmagus gtk2 version."   ON)
 option(ENABLE_GTK3   "Build textmagus gtk3 version."   ON)
-option(ENABLE_QT4    "Build textmagus qt4 version."    OFF) # TODO
+option(ENABLE_QT4    "Build textmagus qt4 version."    ON) # TODO
 option(ENABLE_QT5    "Build textmagus qt5 version."    OFF) # TODO
 
 option(ENABLE_WERROR "Build with '-Werror' flag"  OFF)
@@ -73,6 +73,9 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 if(NOT CMAKE_INSTALL_PREFIX)
     set(CMAKE_INSTALL_PREFIX "/usr/local" CACHE PATH "" FORCE)
+endif()
+if(NOT ENABLE_STATIC AND NOT ENABLE_SHARED)
+    set(ENABLE_STATIC ON)
 endif()
 
 include(CheckFunctionExists)
@@ -100,6 +103,15 @@ macro(my_install_lib) # ARGN
     endif()
 endmacro()
 
+function(my_install_data)
+    set(datadir "${CMAKE_INSTALL_FULL_DATADIR}/textmagus/textadept")
+    set(s "${d}textadept")
+    install(FILES ${s}/init.lua ${s}/properties.lua DESTINATION ${datadir})
+    install(DIRECTORY ${s}/core ${s}/modules ${s}/themes DESTINATION ${datadir})
+    set(s "${d}scintillua")
+    install(DIRECTORY ${s}/lexers DESTINATION ${datadir})
+endfunction()
+
 #
 # compilation flags
 #
@@ -126,6 +138,9 @@ if(ENABLE_GTK3)
     set(GTK3_LIBRARIES ${GTK3_LIBRARIES} gmodule-2.0)
     #message(STATUS "GTK3_INCLUDE_DIRS=${GTK3_INCLUDE_DIRS}")
     #message(STATUS "GTK3_LIBRARIES=${GTK3_LIBRARIES}")
+endif()
+if(ENABLE_QT4)
+    find_package(Qt4 4.6 REQUIRED QtGui)
 endif()
 
 if(CMAKE_SYSTEM_NAME MATCHES "^Linux")
@@ -188,6 +203,14 @@ if(ENABLE_GTK3)
     target_include_directories(${t} INTERFACE ${GTK3_INCLUDE_DIRS})
     target_compile_options(${t} INTERFACE -DGTK=3 -DGDK_DISABLE_DEPRECATION_WARNINGS)
     target_link_libraries(${t} INTERFACE ${GTK3_LIBRARIES})
+endif()
+
+if(ENABLE_QT4)
+    set(t ui_qt4)
+    add_library(${t} INTERFACE)
+    target_include_directories(${t} INTERFACE ${QT_INCLUDES})
+    target_compile_options(${t} INTERFACE -DQT4)
+    target_link_libraries(${t} INTERFACE Qt4::QtGui)
 endif()
 
 ## freestanding: tre
@@ -454,6 +477,8 @@ if(ENABLE_GTK3)
     target_link_libraries(${t} lpeg luafilesystem lspawn_gtk3 gtdialog_gtk3 scintilla_gtk3)
     my_install_bin(${t})
 endif()
+
+my_install_data()
 
 #
 #
