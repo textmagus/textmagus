@@ -1,0 +1,48 @@
+[submodule "3rdparty/src/cdk"]
+	path = 3rdparty/src/cdk
+	url = ../textmagus-3rdparty-cdk
+	branch = master
+[submodule "3rdparty/src/gtdialog"]
+	path = 3rdparty/src/gtdialog
+	url = ../textmagus-3rdparty-gtdialog
+	branch = master
+[submodule "3rdparty/src/libtermkey"]
+	path = 3rdparty/src/libtermkey
+	url = ../textmagus-3rdparty-libtermkey
+	branch = master
+[submodule "3rdparty/src/lspawn"]
+	path = 3rdparty/src/lspawn
+	url = ../textmagus-3rdparty-lspawn
+	branch = master
+[submodule "3rdparty/src/lua"]
+	path = 3rdparty/src/lua
+	url = ../textmagus-3rdparty-lua
+	branch = master
+[submodule "3rdparty/src/lua-lpeg"]
+	path = 3rdparty/src/lua-lpeg
+	url = ../textmagus-3rdparty-lua-lpeg
+	branch = master
+[submodule "3rdparty/src/luafilesystem"]
+	path = 3rdparty/src/luafilesystem
+	url = ../textmagus-3rdparty-luafilesystem
+	branch = master
+[submodule "3rdparty/src/scinterm"]
+	path = 3rdparty/src/scinterm
+	url = ../textmagus-3rdparty-scinterm
+	branch = master
+[submodule "3rdparty/src/scintilla"]
+	path = 3rdparty/src/scintilla
+	url = ../textmagus-3rdparty-scintilla
+	branch = master
+[submodule "3rdparty/src/scintillua"]
+	path = 3rdparty/src/scintillua
+	url = ../textmagus-3rdparty-scintillua
+	branch = master
+[submodule "3rdparty/src/textadept"]
+	path = 3rdparty/src/textadept
+	url = ../textmagus-3rdparty-textadept
+	branch = master
+[submodule "3rdparty/src/tre"]
+	path = 3rdparty/src/tre
+	url = ../textmagus-3rdparty-tre
+	branch = master
