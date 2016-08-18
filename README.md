@@ -63,10 +63,7 @@ git submodule update --init
 Building
 ========
 
-Edit CMakeLists.txt and set ENABLE_CURSES, ENABLE_GTK2, etc. according to
-your preferences and installed development packages.
-
-Then simply run
+Simply run
 
 ```
 mkdir -p build
