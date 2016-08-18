@@ -1,0 +1,51 @@
+
+sudo: false
+language: cpp
+
+branches:
+  only:
+    - master
+
+addons:
+  apt:
+    packages:
+      - libgtk-3-dev
+      - libgtk2.0-dev
+      - libncurses5-dev
+
+install:
+  - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
+  - mkdir -p "${DEPS_DIR}" && cd "${DEPS_DIR}"
+  - |
+    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+      CMAKE_URL="https://cmake.org/files/v3.6/cmake-3.6.1-Linux-x86_64.tar.gz"
+      mkdir cmake && travis_retry wget --no-check-certificate -q -O - "${CMAKE_URL}" | tar -xz --strip-components=1 -C cmake
+      export PATH="${DEPS_DIR}/cmake/bin:${PATH}"
+    elif [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
+      if ! brew ls --version cmake &>/dev/null; then brew install cmake; fi
+    fi
+
+os:
+  - linux
+#  - osx
+
+compiler:
+  - clang
+  - gcc
+
+env:
+  global:
+    - B= C=
+  matrix:
+    - B=cmake/debug   C="-DENABLE_SHARED=0"
+    - B=cmake/debug   C="-DENABLE_SHARED=1"
+    - B=cmake/release C="-DENABLE_SHARED=0"
+    - B=cmake/release C="-DENABLE_SHARED=1"
+
+before_script:
+  - export BUILD_DIR="$TRAVIS_BUILD_DIR/build"
+  - export BUILD_METHOD_AND_BUILD_TYPE="$B"
+  - export CMAKE_EXTRA_FLAGS="$C"
+  - export VERBOSE=
+script:
+  - bash "$TRAVIS_BUILD_DIR/.travis_build.sh"
