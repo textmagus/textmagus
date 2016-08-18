@@ -1,0 +1,13 @@
+#! /bin/sh
+set -e
+
+if ! test -d ./3rdparty/src/.; then
+    echo "error: wrong working directory"
+    exit 1
+fi
+
+mkdir -p build
+cd build
+cmake ..
+
+echo -e "\nConfiguration finished.\nNow type 'make -C build' to build TextMagus."
