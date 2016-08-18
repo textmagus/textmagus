@@ -161,6 +161,7 @@ if(CMAKE_C_COMPILER_ID MATCHES "^(Clang|GNU)$")
     endif()
     if(ENABLE_WERROR)
         add_definitions(-Werror)
+        message(STATUS "INFO: enabling -Werror")
     endif()
 endif()
 

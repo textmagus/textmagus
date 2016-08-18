@@ -25,7 +25,7 @@ Curses, GTK2, GTK3 or QT4 development packages.
 
 On Fedora 23:
 ```
-dnf install cmake gcc-c++ git libstdc++-devel make
+dnf install cmake gcc-c++ git make
 dnf install ncurses-devel               # for the curses version
 dnf install gtk2-devel                  # for the gtk2 version
 dnf install gtk3-devel                  # for the gtk3 version
