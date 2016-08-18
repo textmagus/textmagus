@@ -51,22 +51,15 @@ endif()
 set(CMAKE_C_STANDARD   99)  # C99
 set(CMAKE_CXX_STANDARD 11)  # C++11
 
-
 #
-# configuration options
+# user configuration options
 #
 
 option(ENABLE_CURSES "Build textmagus curses version." ON)
 option(ENABLE_GTK2   "Build textmagus gtk2 version."   ON)
 option(ENABLE_GTK3   "Build textmagus gtk3 version."   ON)
 option(ENABLE_QT4    "Build textmagus qt4 version."    ON) # TODO
-option(ENABLE_QT5    "Build textmagus qt5 version."    OFF) # TODO
-
-option(ENABLE_WERROR "Build with '-Werror' flag"  OFF)
-option(ENABLE_SHARED "Build shared libraries (DEBUG ONLY)"  OFF)
-
-option(SCINTILLA_LEXLIB_ALL_LEXERS "Use all lexers" OFF)
-option(SCINTILLA_LEXLIB_LPEG_LEXER "Use LPeg lexer" ON)
+option(ENABLE_QT5    "Build textmagus qt5 version."    ON) # TODO
 
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE)
@@ -74,6 +67,17 @@ endif()
 if(NOT CMAKE_INSTALL_PREFIX)
     set(CMAKE_INSTALL_PREFIX "/usr/local" CACHE PATH "" FORCE)
 endif()
+
+#
+# advanced configuration options
+#
+
+option(ENABLE_WERROR "Build with '-Werror' compiler flag"  OFF)
+option(ENABLE_SHARED "Build shared libraries (DEBUG ONLY)"  OFF)
+
+option(SCINTILLA_LEXLIB_ALL_LEXERS "Use all Scintilla lexers" OFF)
+option(SCINTILLA_LEXLIB_LPEG_LEXER "Use LPeg lexers" ON)
+
 if(NOT ENABLE_STATIC AND NOT ENABLE_SHARED)
     set(ENABLE_STATIC ON)
 endif()
@@ -84,6 +88,11 @@ include(CheckLibraryExists)
 include(CheckSymbolExists)
 include(CheckTypeSize)
 include(TestBigEndian)
+
+#
+# util for "make install"
+#
+
 include(GNUInstallDirs)
 
 macro(my_install_bin) # ARGN
@@ -118,29 +127,58 @@ endfunction()
 
 if(ENABLE_CURSES)
     include(FindCurses)
-    if(NOT CURSES_FOUND)
-        message(FATAL_ERROR "error: CURSES_FOUND failed")
+    if(CURSES_FOUND)
+        ##set(CURSES_LIBRARIES -lcursesw)
+        #message(STATUS "CURSES_INCLUDE_DIRS=${CURSES_INCLUDE_DIRS}")
+        #message(STATUS "CURSES_LIBRARIES=${CURSES_LIBRARIES}")
+    else()
+        message(STATUS "WARNING: did *NOT* find Curses -- disabling")
+        set(ENABLE_CURSES OFF)
     endif()
-    ##set(CURSES_LIBRARIES -lcursesw)
-    #message(STATUS "CURSES_INCLUDE_DIRS=${CURSES_INCLUDE_DIRS}")
-    #message(STATUS "CURSES_LIBRARIES=${CURSES_LIBRARIES}")
 endif()
 if(ENABLE_GTK2)
     include(FindGTK2)
-    find_package(GTK2 2.18 REQUIRED gtk)
-    set(GTK2_LIBRARIES ${GTK2_LIBRARIES} ${GTK2_GTK_LIBRARY} ${GTK2_GDK_LIBRARY})
-    #message(STATUS "GTK2_INCLUDE_DIRS=${GTK2_INCLUDE_DIRS}")
-    #message(STATUS "GTK2_LIBRARIES=${GTK2_LIBRARIES}")
+    find_package(GTK2 2.18 COMPONENTS gtk)
+    if(GTK2_FOUND)
+        message(STATUS "Found GTK2 ${GTK2_VERSION}")
+        set(GTK2_LIBRARIES ${GTK2_LIBRARIES} ${GTK2_GTK_LIBRARY} ${GTK2_GDK_LIBRARY})
+        #message(STATUS "GTK2_INCLUDE_DIRS=${GTK2_INCLUDE_DIRS}")
+        #message(STATUS "GTK2_LIBRARIES=${GTK2_LIBRARIES}")
+    else()
+        message(STATUS "WARNING: did *NOT* find GTK2 -- disabling")
+        set(ENABLE_GTK2 OFF)
+    endif()
 endif()
 if(ENABLE_GTK3)
     find_package(PkgConfig REQUIRED)
-    pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
-    set(GTK3_LIBRARIES ${GTK3_LIBRARIES} gmodule-2.0)
-    #message(STATUS "GTK3_INCLUDE_DIRS=${GTK3_INCLUDE_DIRS}")
-    #message(STATUS "GTK3_LIBRARIES=${GTK3_LIBRARIES}")
+    pkg_check_modules(GTK3 QUIET gtk+-3.0)
+    if(GTK3_FOUND)
+        message(STATUS "Found GTK3 ${GTK3_VERSION}")
+        set(GTK3_LIBRARIES ${GTK3_LIBRARIES} gmodule-2.0)
+        #message(STATUS "GTK3_INCLUDE_DIRS=${GTK3_INCLUDE_DIRS}")
+        #message(STATUS "GTK3_LIBRARIES=${GTK3_LIBRARIES}")
+    else()
+        message(STATUS "WARNING: did *NOT* find GTK3 -- disabling")
+        set(ENABLE_GTK3 OFF)
+    endif()
 endif()
 if(ENABLE_QT4)
-    find_package(Qt4 4.6 REQUIRED QtGui)
+    find_package(Qt4 4.6 QUIET COMPONENTS QtGui)
+    if(Qt4_FOUND)
+        message(STATUS "Found Qt4")
+    else()
+        message(STATUS "WARNING: did *NOT* find Qt4 -- disabling")
+        set(ENABLE_QT4 OFF)
+    endif()
+endif()
+if(ENABLE_QT5)
+    find_package(Qt5Widgets)
+    if(Qt5Widgets_FOUND)
+        message(STATUS "Found Qt5")
+    else()
+        message(STATUS "WARNING: did *NOT* find Qt5 -- disabling")
+        set(ENABLE_QT5 OFF)
+    endif()
 endif()
 
 if(CMAKE_SYSTEM_NAME MATCHES "^Linux")
@@ -210,9 +248,15 @@ endif()
 if(ENABLE_QT4)
     set(t ui_qt4)
     add_library(${t} INTERFACE)
-    target_include_directories(${t} INTERFACE ${QT_INCLUDES})
-    target_compile_options(${t} INTERFACE -DQT4)
+    target_compile_options(${t} INTERFACE -DQT=4)
     target_link_libraries(${t} INTERFACE Qt4::QtGui)
+endif()
+
+if(ENABLE_QT5)
+    set(t ui_qt5)
+    add_library(${t} INTERFACE)
+    target_compile_options(${t} INTERFACE -DQT=5)
+    target_link_libraries(${t} INTERFACE Qt5::Widgets)
 endif()
 
 ## freestanding: tre
@@ -239,7 +283,7 @@ if(ENABLE_CURSES)
     if(CMAKE_C_COMPILER_ID MATCHES "^(Clang|GNU)$")
         target_compile_options(${t} PRIVATE -Wno-sign-compare -Wno-unused-parameter)
     endif()
-    target_link_libraries(${t} ui_curses)
+    target_link_libraries(${t} ui_curses ui_qt4)
     my_install_lib(${t})
 endif()
 

@@ -21,7 +21,7 @@ gcc versions >= 4.6 and clang versions >= 3.3 are known to work.
 
 A recent cmake version >= 3.4.
 
-Curses, GTK2, GTK3 or QT4 development packages.
+Curses, GTK2, GTK3, QT4 or QT5 development packages.
 
 On Fedora 23:
 ```
@@ -30,11 +30,17 @@ dnf install ncurses-devel               # for the curses version
 dnf install gtk2-devel                  # for the gtk2 version
 dnf install gtk3-devel                  # for the gtk3 version
 dnf install qt-devel                    # for the qt4 version
+dnf install qt5-qtbase-devel            # for the qt5 version
 ```
 
 On Ubuntu 14.04 "Trusty":
 ```
-apt-get install cmake git libgtk2.0-dev libgtk-3-dev libncurses5-dev libqt4-dev make
+apt-get install build-essential cmake g++ git
+apt-get install libncurses5-dev
+apt-get install libgtk2.0-dev
+apt-get install libgtk-3-dev
+apt-get install libqt4-dev
+apt-get install qtbase5-dev
 ```
 
 
@@ -57,7 +63,10 @@ git submodule update --init
 Building
 ========
 
-Just run
+Edit CMakeLists.txt and set ENABLE_CURSES, ENABLE_GTK2, etc. according to
+your preferences and installed development packages.
+
+Then simply run
 
 ```
 mkdir -p build
