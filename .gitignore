@@ -1,5 +1,6 @@
 /.hg/
 /.hgignore
-/.mfxbackup
 /build
 /build/
+.mfxbackup
+.mfxnobackup
